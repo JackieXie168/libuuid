@@ -1,0 +1,78 @@
+.gitattributes text eol=lf diff
+.gitignore text eol=lf diff
+*.md text eol=lf diff
+*.txt text eol=lf diff
+*.java text eol=lf diff
+*.cs text eol=lf diff
+*.xsd text eol=lf diff
+*.xml text eol=lf diff
+*.html text eol=lf diff
+*.pgsql text eol=lf diff
+*.sql text eol=lf diff
+*.plsql text eol=lf diff
+*.isql text eol=lf diff
+*.mysql text eol=lf diff
+*.tsql text eol=lf diff
+*.bash text eol=lf diff
+*.bat text eol=crlf diff
+*.db -text -diff
+*.ipch -text -diff
+*.jar -text -diff
+*.zip -text -diff
+*.jpg -text -diff
+*.jpeg -text -diff
+*.gif -text -diff
+*.png -text -diff
+*.asm text eol=lf diff
+*.m4 text eol=lf diff
+*.el text eol=lf diff
+*.pl text eol=lf diff
+*.in text eol=lf diff
+*.f text eol=lf diff
+*.s text eol=lf diff
+*.y text eol=lf diff
+*.l text eol=lf diff
+*.pm text eol=lf diff
+*.xs text eol=lf diff
+*.tex text eol=lf diff
+*.texi text eol=lf diff
+*.cc text eol=lf diff
+*.gdbinit text eol=lf diff
+*.README text eol=lf diff
+README* text eol=lf diff
+AUTHORS* text eol=lf diff
+BUGS* text eol=lf diff
+NEWS* text eol=lf diff
+ChangeLog text eol=lf diff
+VERSION* text eol=lf diff
+COPYING* text eol=lf diff
+CONFIG* text eol=lf diff
+COMPIL* text eol=lf diff
+INSTAL* text eol=lf diff
+test* text eol=lf diff
+typemap* text eol=lf diff
+*info* text eol=lf diff
+isa_abi_headache text eol=lf diff
+ylwrap text eol=lf diff
+TODO* text eol=lf diff
+*.dat text eol=lf diff
+ck-* text eol=lf diff
+*.sh text eol=lf diff
+*.txt text eol=lf diff
+*-sh text eol=lf diff
+*-vti text eol=lf diff
+*-tests text eol=lf diff
+*-ccas text eol=lf diff
+depcomp* text eol=lf diff
+ar-lib text eol=lf diff
+check-typography text eol=lf diff
+*.cpp text eol=lf diff
+*.hpp text eol=lf diff
+*.c text eol=lf diff
+*.h text eol=lf diff
+*.ac text eol=lf diff
+*.am text eol=lf diff
+*.sln text eol=crlf diff
+*.vcxproj text eol=crlf diff
+*.user text eol=crlf diff
+*.filters text eol=crlf diff

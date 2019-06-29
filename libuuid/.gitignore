@@ -1,0 +1,9 @@
+Debug
+x64
+*.obj
+*.lib
+*.dll
+*.exp
+*.o
+*.a
+*.res

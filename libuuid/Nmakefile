@@ -1,0 +1,22 @@
+/*
+ * nmake file for uwin pthread library
+ */
+
+VERSION 		= -
+CCFLAGS 		= -V -g $(CC.DLL)
+_MT			== 1
+_timeb		== timeb
+_ftime		== ftime
+_errno		== _ast_errno
+
+$(INCLUDEDIR)	:INSTALLDIR:	uuid/uuid.h
+
+libuuid $(VERSION) :LIBRARY: clear.c compare.c copy.c \
+	dll_main.cpp gen_uuid.c isnull.c libuuid.cpp \
+	pack.c parse.c randutils.c stdafx.cpp \
+	unpack.c unparse.c uuid_time.c
+
+:: libuuid.vcxproj.user libuuid.vcxproj Makefile uuidP.h \
+	all-io.h c.h config.h randutils.h stdafx.h targetver.h \
+	uuidd.h uuidP.h
+

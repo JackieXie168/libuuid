@@ -1,2 +1,2 @@
 # libuuid-win64
-UUID Library for Windows 10 64-bit AMD, no attribution required, standard system library.
+libuuid 1.0.3 ported to Win64
