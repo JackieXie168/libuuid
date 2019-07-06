@@ -1,3 +1,12 @@
+ACLOCAL_AMFLAGS = -I m4
+
+if BUILD_UUIDGEN
+noinst_PROGRAMS = uuidgen
+uuidgen_SOURCES = uuidgen.c
+uuidgen_LDADD = $(LDADD) libuuid.la
+uuidgen_CFLAGS = $(AM_CFLAGS) -I$(top_srcdir)
+endif
+
 check_PROGRAMS = test_uuid
 test_uuid_SOURCES = test_uuid.c
 test_uuid_LDADD = libuuid.la $(SOCKET_LIBS)
@@ -30,11 +39,21 @@ libuuid_la_SOURCES = \
 	randutils.c \
 	$(uuidinc_HEADERS)
 
+libuuid_la_DEPENDENCIES = uuid.sym
+
 noinst_HEADERS = \
 	all-io.h \
 	c.h \
-	randutils.h
+	randutils.h \
+	nls.h
 
 libuuid_la_LIBADD  = $(SOCKET_LIBS)
-libuuid_la_CFLAGS  = -I$(top_srcdir)
-libuuid_la_LDFLAGS = -version-info $(LIBUUID_VERSION_INFO)
+libuuid_la_CFLAGS  = $(SOLIB_CFLAGS) -I$(top_srcdir)
+libuuid_la_LDFLAGS = \
+	$(SOLIB_LDFLAGS) \
+if HAVE_VERSION_SCRIPT
+	-Wl,--version-script=$(top_srcdir)/uuid.sym \
+endif HAVE_VERSION_SCRIP
+	-version-info $(LIBUUID_VERSION_INFO)
+
+EXTRA_DIST += uuid.sym
