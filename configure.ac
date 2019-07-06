@@ -77,7 +77,7 @@ AC_TYPE_UINT64_T
 AC_TYPE_UINT8_T
 
 # Checks for library functions.
-AC_CHECK_FUNCS([__fpending atexit ftruncate gettimeofday memset setlocale socket strrchr strtoul usleep srandom])
+AC_CHECK_FUNCS([__fpending atexit fsync ftruncate gettimeofday memset setlocale socket strrchr strtoul usleep srandom])
 
 dnl version details from <major>.<minor>.<release>
 PACKAGE_VERSION_MAJOR=$(echo $PACKAGE_VERSION | awk -F. '{print $1}')
