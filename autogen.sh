@@ -1,68 +1,126 @@
-#! /bin/sh
+#!/bin/sh
 
-# $Id: autogen.sh,v 1.4 2002/12/02 01:39:49 murrayc Exp $
 #
-# Copyright (c) 2002  Daniel Elstner  <daniel.elstner@gmx.net>
+# Helps generate autoconf/automake stuff, when code is checked out from SCM.
 #
-# This program is free software; you can redistribute it and/or modify
-# it under the terms of the GNU General Public License VERSION 2 as
-# published by the Free Software Foundation.  You are not allowed to
-# use any other version of the license; unless you got the explicit
-# permission from the author to do so.
+# Copyright (C) 2006-2010 - Karel Zak <kzak@redhat.com>
 #
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with this program; if not, write to the Free Software
-# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
+srcdir=`dirname $0`
+test -z "$srcdir" && srcdir=.
 
-dir=`echo "$0" | sed 's,[^/]*$,,'`
-test "x${dir}" = "x" && dir='.'
+THEDIR=`pwd`
+cd $srcdir
+DIE=0
 
-if test "x`cd "${dir}" 2>/dev/null && pwd`" != "x`pwd`"
-then
-    echo "This script must be executed directly from the source directory."
-    exit 1
+# provide simple gettext backward compatibility
+autopoint_fun ()
+{
+	# we have to deal with set -e ...
+	ret="0"
+
+	# check against this hardcoded set of alternative gettext versions
+	gt_ver=`gettext --version |\
+		sed -n -e 's/.* \(0\.18\|0\.18\.[1-2]\)$/\1/p'`
+
+	if [ -n "$gt_ver" ]; then
+		echo "warning, force autopoint to use old gettext $gt_ver"
+		rm -f configure.ac.autogenbak
+		sed -i.autogenbak configure.ac \
+			-e "s/\(AM_GNU_GETTEXT_VERSION\).*/\1([$gt_ver])/"
+	fi
+
+	autopoint "$@" || ret=$?
+
+	if [ -n "$gt_ver" ]; then
+		mv configure.ac.autogenbak configure.ac
+	fi
+
+	return $ret
+}
+
+#test -f sys-utils/mount.c || {
+#	echo
+#	echo "You must run this script in the top-level util-linux directory"
+#	echo
+#	DIE=1
+#}
+
+(autopoint --version) < /dev/null > /dev/null 2>&1 || {
+        echo
+        echo "You must have autopoint installed to generate util-linux build system."
+        echo "The autopoint command is part of the GNU gettext package."
+	echo
+        DIE=1
+}
+(autoconf --version) < /dev/null > /dev/null 2>&1 || {
+	echo
+	echo "You must have autoconf installed to generate util-linux build system."
+	echo
+	DIE=1
+}
+(autoheader --version) < /dev/null > /dev/null 2>&1 || {
+	echo
+	echo "You must have autoheader installed to generate util-linux build system."
+	echo "The autoheader command is part of the GNU autoconf package."
+	echo
+	DIE=1
+}
+(libtoolize --version) < /dev/null > /dev/null 2>&1 || {
+	echo
+	echo "You must have libtool-2 installed to generate util-linux build system."
+	echo
+	DIE=1
+}
+(automake --version) < /dev/null > /dev/null 2>&1 || {
+	echo
+	echo "You must have automake installed to generate util-linux build system."
+	echo 
+	DIE=1
+}
+
+ltver=$(libtoolize --version | awk '/^libtoolize/ { print $4 }')
+ltver=${ltver:-"none"}
+test ${ltver##2.} = "$ltver" && {
+	echo "You must have libtool version >= 2.x.x, but you have $ltver."
+	DIE=1
+}
+
+if test "$DIE" -eq 1; then
+	exit 1
 fi
 
-rm -f config.cache acconfig.h
+echo
+echo "Generate build-system by:"
+echo "   autopoint:  $(autopoint --version | head -1)"
+echo "   aclocal:    $(aclocal --version | head -1)"
+echo "   autoconf:   $(autoconf --version | head -1)"
+echo "   autoheader: $(autoheader --version | head -1)"
+echo "   automake:   $(automake --version | head -1)"
+echo "   libtoolize: $(libtoolize --version | head -1)"
 
-if [ ! -e configure ]; then
-echo "- libtoolize."            && \
-libtoolize --force              && \
-echo "- autoscan."              && \
-autoscan                        && \
-echo "- aclocal."               && \
-aclocal                         && \
-echo "- autoconf."              && \
-autoconf                        && \
-echo "- autoheader."            && \
-autoheader                      && \
-echo "- automake."              && \
-automake --add-missing --gnu    && \
-echo				&& \
-./configure "$@"                && exit 0
-else
-#echo "Do nothing ..."
-echo "- libtoolize."            && \
-libtoolize --force              && \
-echo "- aclocal."               && \
-aclocal                         && \
-echo "- autoconf."              && \
-autoconf                        && \
-echo "- autoheader."            && \
-autoheader                      && \
-echo "- automake."              && \
-automake --add-missing --gnu    && \
-echo "findished."               && \
-#./configure "$@"                && exit 0
-exit 0
-fi
+rm -rf autom4te.cache
 
-exit 1
+set -e
+#po/update-potfiles
+#autopoint_fun --force $AP_OPTS
+#if ! grep -q datarootdir po/Makefile.in.in; then
+#	echo autopoint does not honor dataroot variable, patching.
+#	sed -i -e 's/^datadir *=\(.*\)/datarootdir = @datarootdir@\
+#datadir = @datadir@/g' po/Makefile.in.in
+#fi
+libtoolize --force $LT_OPTS
+aclocal -I m4 $AL_OPTS
+autoconf $AC_OPTS
+autoheader $AH_OPTS
 
+automake --add-missing $AM_OPTS
+
+cd "$THEDIR"
+
+./configure "$@"
+
+echo
+echo "Now type 'make' to compile."
+echo               && exit 0
 
