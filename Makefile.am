@@ -1,4 +1,5 @@
 ACLOCAL_AMFLAGS = -I m4
+AM_CFLAGS=-std=gnu99
 
 if BUILD_UUIDGEN
 noinst_PROGRAMS = uuidgen

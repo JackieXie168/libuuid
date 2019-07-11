@@ -63,7 +63,14 @@ AC_SEARCH_LIBS([socket], [socket],
 AC_SUBST([SOCKET_LIBS])
 
 # Checks for header files.
-AC_CHECK_HEADERS([fcntl.h getopt.h inttypes.h langinfo.h libintl.h limits.h locale.h netinet/in.h stddef.h stdio_ext.h stdlib.h string.h sys/file.h sys/ioctl.h sys/socket.h sys/time.h unistd.h])
+AC_CHECK_HEADERS([errno.h fcntl.h getopt.h inttypes.h langinfo.h libintl.h limits.h locale.h net/if.h net/if_dl.h netinet/in.h stdio.h stddef.h stdio_ext.h stdlib.h string.h sys/file.h sys/ioctl.h sys/sockio.h sys/stat.h sys/socket.h sys/time.h sys/types.h unistd.h])
+
+dnl AC_CHECK_HEADERS([net/if.h net/if_dl.h], [], [], 
+dnl [#if HAVE_NETINET_IN_H 
+dnl #include <netinet/in.h> 
+dnl #endif 
+dnl ])
+
 AC_CHECK_DECLS([_SC_HOST_NAME_MAX])
 
 # Checks for typedefs, structures, and compiler characteristics.

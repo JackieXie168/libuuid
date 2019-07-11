@@ -38,6 +38,7 @@
  */
 #define _SVID_SOURCE
 
+#include "config.h"
 #ifdef _WIN32
 #define _WIN32_WINNT 0x0500
 #include <windows.h>
@@ -458,7 +459,10 @@ int __uuid_generate_time(uuid_t out, int *num)
 			 * network cards
 			 */
 			node_id[0] |= 0x01;
+			/*printf("generate by random\n");*/
 		}
+		else
+			/*printf("generate by mac\n");*/
 		has_init = 1;
 	}
 	ret = get_clock(&clock_mid, &uu.time_low, &uu.clock_seq, num);
