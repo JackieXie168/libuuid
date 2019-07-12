@@ -87,6 +87,10 @@
 #if defined(__linux__) && defined(HAVE_SYS_SYSCALL_H)
 #include <sys/syscall.h>
 #endif
+#if defined(darwin) || defined(__FreeBSD__) || defined(__APPLE__) || defined(MACOSX)
+#include <ifaddrs.h>
+#include <net/if_types.h>
+#endif
 
 #include "all-io.h"
 #include "uuidP.h"
@@ -178,6 +182,31 @@ static int getuid (void)
  */
 static int get_node_id(unsigned char *node_id)
 {
+#if defined(darwin) || defined(__FreeBSD__) || defined(__APPLE__) || defined(MACOSX)
+	struct ifaddrs *ifa_list, *ifa; 
+	struct sockaddr_dl *dl; 
+	char name[12];
+	unsigned char *addr;
+
+	if (getifaddrs(&ifa_list) < 0) {
+		return -1;
+	}
+	for (ifa = ifa_list; ifa != NULL; ifa = ifa->ifa_next) { 
+		dl = (struct sockaddr_dl*)ifa->ifa_addr; 
+		if (dl->sdl_family == AF_LINK && dl->sdl_type == IFT_ETHER) {
+			memcpy(name, dl->sdl_data, dl->sdl_nlen);
+			name[dl->sdl_nlen] = '\0';
+			addr = (unsigned char *)LLADDR(dl);
+			if (!addr[0] && !addr[1] && !addr[2] && !addr[3] && !addr[4] && !addr[5])
+				continue;
+			if (node_id) {
+				memcpy(node_id, addr, 6);
+				return 1;
+			}
+		}
+	} 
+	freeifaddrs(ifa_list);
+#else
 #ifdef HAVE_NET_IF_H
 	int		sd;
 	struct ifreq	ifr, *ifrp;
@@ -251,6 +280,7 @@ static int get_node_id(unsigned char *node_id)
 		}
 	}
 	close(sd);
+#endif
 #endif
 	return 0;
 }
@@ -461,8 +491,8 @@ int __uuid_generate_time(uuid_t out, int *num)
 			node_id[0] |= 0x01;
 			/*printf("generate by random\n");*/
 		}
-		else
-			/*printf("generate by mac\n");*/
+		/*else
+			printf("generate by mac\n");*/
 		has_init = 1;
 	}
 	ret = get_clock(&clock_mid, &uu.time_low, &uu.clock_seq, num);
