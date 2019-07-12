@@ -201,6 +201,7 @@ static int get_node_id(unsigned char *node_id)
 				continue;
 			if (node_id) {
 				memcpy(node_id, addr, 6);
+				freeifaddrs(ifa_list);
 				return 1;
 			}
 		}
